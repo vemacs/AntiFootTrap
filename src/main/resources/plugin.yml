@@ -1,0 +1,5 @@
+author: vemacs
+description: Prevents foot trapping
+main: com.nullblock.vemacs.antifoottrap.AntiFootTrap
+name: AntiFootTrap
+version: '1.0'
