@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -25,6 +26,7 @@ public class AntiFootTrap extends JavaPlugin implements Listener {
 
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
+        this.saveDefaultConfig();
         BukkitTask task = new CheckLocation().runTaskTimer(this, 0, CheckLocation.interval);
     }
 
@@ -43,7 +45,18 @@ public class AntiFootTrap extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player p = event.getPlayer();
-        triggeredPlayers.remove(p.getName());
-        playerTimes.remove(p.getName());
+        cleanup(p.getName());
     }
+
+    @EventHandler
+    public void onPlayerKick(PlayerKickEvent event) {
+        Player p = event.getPlayer();
+        cleanup(p.getName());
+    }
+
+    public static void cleanup(String player) {
+        triggeredPlayers.remove(player);
+        playerTimes.remove(player);
+    }
+
 }

@@ -21,24 +21,30 @@ public class CheckLocation extends BukkitRunnable {
         for (ConcurrentHashMap.Entry<String, Location> entry : AntiFootTrap.triggeredPlayers.entrySet()) {
             Player p = Bukkit.getPlayer(entry.getKey());
             if (p != null) {
-            Location l1 = entry.getValue();
-            entry.setValue(p.getLocation());
-            if (isSameXZ(l1, p.getLocation())) {
-                AntiFootTrap.playerTimes.put(p.getName(), AntiFootTrap.playerTimes.get(p.getName()) + 1);
-                getPlugin().getLogger().info(p.getName() + "has had " + AntiFootTrap.playerTimes.get(p.getName()) + " passes");
-                if (AntiFootTrap.playerTimes.get(p.getName()) >= sec * (20 / interval)) {
-                    p.teleport(p.getWorld().getSpawnLocation());
-                    AntiFootTrap.triggeredPlayers.remove(p.getName());
-                    AntiFootTrap.playerTimes.remove(p.getName());
-                    getPlugin().getLogger().info(p.getName() + " has been TPed to spawn");
+                Location l1 = entry.getValue();
+                entry.setValue(p.getLocation());
+                if (isSameXZ(l1, p.getLocation())) {
+                    AntiFootTrap.playerTimes.put(p.getName(), AntiFootTrap.playerTimes.get(p.getName()) + 1);
+                    // getPlugin().getLogger().info(p.getName() + "has had " + AntiFootTrap.playerTimes.get(p.getName()) + " passes");
+                    if (AntiFootTrap.playerTimes.get(p.getName()) >= sec * (20 / interval)) {
+                        String[] config = getPlugin().getConfig().getString("spawn").split(",");
+                        int[] spawn = new int[3];
+                        spawn[0] = Integer.parseInt(config[0]);
+                        spawn[1] = Integer.parseInt(config[1]);
+                        spawn[2] = Integer.parseInt(config[2]);
+                        Location loc = new Location(p.getWorld(), spawn[0], spawn[1] + 2, spawn[2]);
+                        p.teleport(loc);
+                        AntiFootTrap.cleanup(p.getName());
+                        getPlugin().getLogger().info(p.getName() + " has been TPed to spawn");
+                    }
+                } else {
+                    AntiFootTrap.cleanup(p.getName());
                 }
             }
+            else {
+                AntiFootTrap.cleanup(entry.getKey());
+            }
         }
-        else {
-            AntiFootTrap.triggeredPlayers.remove(entry.getKey());
-            AntiFootTrap.playerTimes.remove(entry.getKey());
-        }
-    }
     }
 
     private boolean isSameXZ(Location loc1, Location loc2) {
