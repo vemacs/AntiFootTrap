@@ -20,10 +20,12 @@ public class CheckLocation extends BukkitRunnable {
     public void run() {
         for (ConcurrentHashMap.Entry<String, Location> entry : AntiFootTrap.triggeredPlayers.entrySet()) {
             Player p = Bukkit.getPlayer(entry.getKey());
+            if (p != null) {
             Location l1 = entry.getValue();
-            AntiFootTrap.triggeredPlayers.put(p.getName(), p.getLocation());
+            entry.setValue(p.getLocation());
             if (isSameXZ(l1, p.getLocation())) {
                 AntiFootTrap.playerTimes.put(p.getName(), AntiFootTrap.playerTimes.get(p.getName()) + 1);
+                getPlugin().getLogger().info(p.getName() + "has had " + AntiFootTrap.playerTimes.get(p.getName()) + " passes");
                 if (AntiFootTrap.playerTimes.get(p.getName()) >= sec * (20 / interval)) {
                     p.teleport(p.getWorld().getSpawnLocation());
                     AntiFootTrap.triggeredPlayers.remove(p.getName());
@@ -32,6 +34,11 @@ public class CheckLocation extends BukkitRunnable {
                 }
             }
         }
+        else {
+            AntiFootTrap.triggeredPlayers.remove(entry.getKey());
+            AntiFootTrap.playerTimes.remove(entry.getKey());
+        }
+    }
     }
 
     private boolean isSameXZ(Location loc1, Location loc2) {
