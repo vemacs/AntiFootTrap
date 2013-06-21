@@ -35,10 +35,12 @@ public class AntiFootTrap extends JavaPlugin implements Listener {
         Entity e = event.getEntity();
         if (e instanceof Player && event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getDamager() instanceof Player) {
             Player p = (Player) e;
-            if (!triggeredPlayers.contains(p.getName())) {
+            if (!triggeredPlayers.containsKey(p.getName())) {
                 triggeredPlayers.put(p.getName(), p.getLocation());
+              }
+            if (!playerTimes.containsKey(p.getName())) {
                 playerTimes.put(p.getName(), 0);
-            }
+              }
         }
     }
 
