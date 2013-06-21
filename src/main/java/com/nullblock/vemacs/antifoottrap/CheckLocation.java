@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CheckLocation extends BukkitRunnable {
 
-    public static int interval = 2;
+    public static int interval = 1;
     public float sec = 10;
 
     public CheckLocation() {
@@ -25,7 +25,7 @@ public class CheckLocation extends BukkitRunnable {
                 entry.setValue(p.getLocation());
                 if (isSameXZ(l1, p.getLocation())) {
                     AntiFootTrap.playerTimes.put(p.getName(), AntiFootTrap.playerTimes.get(p.getName()) + 1);
-                    // getPlugin().getLogger().info(p.getName() + "has had " + AntiFootTrap.playerTimes.get(p.getName()) + " passes");
+                    getPlugin().getLogger().info(p.getName() + "has had " + AntiFootTrap.playerTimes.get(p.getName()) + " passes");
                     if (AntiFootTrap.playerTimes.get(p.getName()) >= sec * (20 / interval)) {
                         String[] config = getPlugin().getConfig().getString("spawn").split(",");
                         int[] spawn = new int[3];
@@ -35,9 +35,10 @@ public class CheckLocation extends BukkitRunnable {
                         Location loc = new Location(p.getWorld(), spawn[0], spawn[1] + 2, spawn[2]);
                         p.teleport(loc);
                         AntiFootTrap.cleanup(p.getName());
-                        getPlugin().getLogger().info(p.getName() + " has been TPed to spawn");
+                        getPlugin().getLogger().info(p.getName() + " has been TPed to " + loc.getX() + ", "  + loc.getY() + ", "  + loc.getZ());
                     }
                 } else {
+                    getPlugin().getLogger().info(p.getName() + " moved by X " + (p.getLocation().getX() - l1.getX()) + " and Z " + (p.getLocation().getZ() - l1.getZ()));
                     AntiFootTrap.cleanup(p.getName());
                 }
             }
@@ -48,7 +49,7 @@ public class CheckLocation extends BukkitRunnable {
     }
 
     private boolean isSameXZ(Location loc1, Location loc2) {
-        float range = 1.1F;
+        float range = 1.5F;
         if (Math.abs(loc1.getX() - loc2.getX()) < (range / 2) && Math.abs(loc1.getZ() - loc2.getZ()) < (range / 2)) {
             return true;
         }
